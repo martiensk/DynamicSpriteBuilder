@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.DependencyInjection;
+using DynamicSpriteBuilder.classes;
 
 namespace DynamicSpriteBuilder.Pages
 {
@@ -13,7 +15,7 @@ namespace DynamicSpriteBuilder.Pages
 
         public void OnGet()
         {
-
+           Spriter spriter = new Spriter();
         }
     }
 }
