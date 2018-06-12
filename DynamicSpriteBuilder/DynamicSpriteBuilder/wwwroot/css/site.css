@@ -3,4 +3,40 @@ html, body {
     min-height: 100%;
     margin: 0;
     padding: 0;
+    overflow-x: hidden;
+}
+
+h1 {
+    margin: 0;
+    padding: 8px;
+    width: 100%;
+    color: #fff;
+    background-color: rgba(0,0,0,0.7);
+    text-align:center;
+}
+
+button {
+    border: 2px solid black;
+    font-weight: bold;
+    font-size: 16px;
+    padding: 5px;
+    background: transparent;
+    cursor: pointer;
+    margin: 20px;
+}
+
+button:hover {
+    background-color: rgba(0,0,0,0.1);
+}
+
+.sprites {
+    padding: 20px;
+}
+
+.sprites img:first-child {
+    height: 200px; 
+    width: 200px;
+}
+.sprites img {
+    float: left;
 }
