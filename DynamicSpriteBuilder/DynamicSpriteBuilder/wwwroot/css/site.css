@@ -34,9 +34,10 @@ button:hover {
 }
 
 .sprites img:first-child {
-    height: 200px; 
-    width: 200px;
+    min-width: 250px;
 }
 .sprites img {
     float: left;
+    border: 1px solid gray;
+    margin: 10px;
 }

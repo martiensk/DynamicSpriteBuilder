@@ -28,9 +28,14 @@ namespace DynamicSpriteBuilder.Pages
         public JsonResult OnGetSpriteSheet()
         {
             Random r = new Random();
-            int[] idList = { r.Next(1, 30), r.Next(1, 30), r.Next(1, 30), r.Next(1, 30), r.Next(1, 30) };
-            string name =_sprite.buildSpritesheet(idList);
-            return new JsonResult(name);
+            int spriteCount = r.Next(1, 10);
+            int[] idList = new int[spriteCount];
+            for (int i = 0; i < spriteCount; i++)
+            {
+                idList[i] = r.Next(1, 30);
+            }
+            SpriteSheet image =_sprite.buildSpritesheet(idList);
+            return new JsonResult(image);
         }
     }
 }
