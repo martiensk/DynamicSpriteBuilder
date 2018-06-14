@@ -41,7 +41,7 @@ namespace DynamicSpriteBuilder.classes
 
         public SpriteSheet buildSpritesheet(int[] idList)
         {
-            string name = "sh_";
+            string name = "sh-";
             string css = "";
 
             int height = 0;
@@ -53,6 +53,7 @@ namespace DynamicSpriteBuilder.classes
             List<KeyValuePair<int, int>> points = new List<KeyValuePair<int, int>>(); 
             List<Image> spriteImages = new List<Image>();
             SpriteSheet sheet = new SpriteSheet();
+            string[] spriteNames = new string[idList.Length];
 
             if(idList.Length > 20)
             {
@@ -90,6 +91,8 @@ namespace DynamicSpriteBuilder.classes
                 }
             }
 
+            css = $".{name}{{background: url('images/sprites/{name}.png') no-repeat;}}";
+
             using (Bitmap bmp = new Bitmap(width, height))
             {
                 //var ms = new MemoryStream();
@@ -98,9 +101,17 @@ namespace DynamicSpriteBuilder.classes
                     g.Clear(Color.Transparent);
                     x = 0;
                     y = 0;
-                    foreach (Image img in spriteImages)
+
+                    for (int i = 0; i < spriteImages.Count; i++)
                     {
-                        if (x + img.Width < _maxWidth)
+                        Image img = spriteImages[i];
+                        // Sprite start and end co-ordinates.
+                        int s_x = x;
+                        int s_y = y;
+                        int e_x = x + img.Width;
+                        int e_y = y + img.Height;
+
+                        if (e_x < _maxWidth)
                         {
                             g.DrawImage(img, new Point(x, y));
                             x += img.Width;
@@ -111,11 +122,22 @@ namespace DynamicSpriteBuilder.classes
                             x = 0;
                             g.DrawImage(img, new Point(x, y));
                             x += img.Width;
+                            // Reset x position for sprite
+                            s_x = 0;
+                            e_x = x;
+                            s_y = y;
+                            e_y = y + img.Height;
                         }
+
+                        spriteNames[i] = $"s-{idList[i]}";
+
+                        css += $".{name}.s-{idList[i]}{{" +
+                            $"background-size: {this.Calculate(width, s_x, e_x, true)}% {this.Calculate(height, s_y, e_y, true)}%;" +
+                            $"background-position: {this.Calculate(width, s_x, e_x, false)}% {this.Calculate(height, s_y, e_y, false)}%;}}";
+
                     }
                     Directory.CreateDirectory($"{_webroot}//images//sprites//");
 
-                    css = $"{name}{{background: url('images/sprites {name}.png}} no-repeat;}}";
 
                     bmp.Save($"{_webroot}//images//sprites//{name}.png");
                 }
@@ -123,10 +145,39 @@ namespace DynamicSpriteBuilder.classes
 
             sheet.Name = name;
             sheet.CSS = css;
+            sheet.Sprites = spriteNames;
+            sheet.Path = $"/images/sprites/{name}.png";
 
             return sheet;
         }
 
+        /**
+         * Method accepts three parameters:
+         * dimension - the spritesheet height / width as required.
+         * n1 - The smaller value of x / y, as required
+         * n2 - The bigger value of x / y, as required
+         * calcSize - If true will calculate size, otherwise will calculate position.
+         */
+        public decimal Calculate(int dimension, int n1, int n2, bool calcSize)
+        {
+            try
+            {
+                decimal result;
+                if (calcSize)
+                {
+                    result = (decimal)dimension / (n2 - n1) * 100;
+                }
+                else
+                {
+                    result = (decimal)n1 / (dimension - (n2 - n1)) * 100;
+                }
+                return result < 0 || Math.Round(result) == 0 ? 0 : result;
+            }
+            catch
+            {
+                return 0;
+            }
+        }
     }
 
     // This class represents a single image.
@@ -142,6 +193,7 @@ namespace DynamicSpriteBuilder.classes
     {
         public string Name { get; set; }
         public string CSS { get; set; }
-        public List<string> Sprites { get; set; }
+        public string[] Sprites { get; set; }
+        public string Path { get; set; }
     }
 }
